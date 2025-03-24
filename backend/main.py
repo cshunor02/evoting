@@ -14,6 +14,7 @@ app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 init_db(app)
+seed(app)
 migrate = Migrate(app, db)
 
 register_blueprints(app)
