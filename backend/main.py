@@ -2,6 +2,7 @@ from flask import Flask, request
 import sys
 from routes import register_blueprints
 from config import SQLALCHEMY_DATABASE_URI
+from models import *
 from db import db, init_db
 from dotenv import load_dotenv
 from flask_migrate import Migrate
