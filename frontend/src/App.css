@@ -2,6 +2,11 @@
   padding: 2rem;
 }
 
+html, body {
+  scroll-behavior: smooth;
+  overflow: visible;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -40,6 +45,7 @@
 
 .electionPanel{
   display: inline-flex;
+  flex-wrap: wrap;
 }
 
 .election {
@@ -51,25 +57,42 @@
   width: 350px;
 }
 
-.election .status {
+.status {
   float: left;
+  padding: 0;
+  margin: 0;
+}
+
+.active{
   color: rgb(31, 221, 31);
 }
 
-.election input {
-  float: right;
-  background-color: #3b82f6;
-  border: 0;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  color: white;
-  border-radius: 10px;
-  padding: 1em 2em 1em 2em;
-  cursor: pointer;
-  
+.passive {
+  color: rgb(207, 115, 10);
 }
 
-.election input:hover {
+.election .voteButton {
+  float: right;
+  border: 0;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: .5em 2em .5em 2em;
+  cursor: pointer;
+}
+
+.activeButton:hover {
   color: rgb(221, 221, 221);
+}
+
+.activeButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.passiveButton {
+  background-color: rgb(207, 207, 207);
+  color: black;
+  pointer-events:none;  
 }
 
 .election h3{
@@ -84,5 +107,15 @@
 .activeElection {
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   background-color: white;
-  width: 100%;
+  width: 98%;
+  padding: .1em 1em .2em 1em;
+  margin-top: 1em;
+  margin-right: 1em;
+  border-radius: 10px;
+}
+
+hr {
+  color: rgba(0, 0, 0, 0.4);
+  width: 50%;
+  margin: 0;
 }
