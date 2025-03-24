@@ -20,6 +20,7 @@ body {
   padding: 0;
   margin: 0;
   width: 100%;
+  padding-top: 2.5em;
 } 
 
 a {
@@ -30,14 +31,6 @@ a {
 }
 a:hover {
   color: #e0e0e0;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
