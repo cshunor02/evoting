@@ -1,0 +1,142 @@
+#root {
+  padding: 2rem;
+}
+
+html, body {
+  scroll-behavior: smooth;
+  overflow: visible;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.electionPanel{
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.election {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin: .5em 1em 0.5em 1em;
+  padding: 1em;
+  width: 350px;
+  position: relative;
+}
+
+.status {
+  float: left;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  bottom: 22px;
+  left: 35px;
+}
+
+.dot {
+  position: absolute;
+  top: 1px;
+  left: -22px;
+  font-size: 1.5em;
+}
+
+@keyframes flicker {
+  0%   {opacity: 0%;}
+  50%   {opacity: 100%;}
+  100%   {opacity: 0%;}
+}
+
+.active{
+  color: rgb(31, 221, 31);
+}
+
+.active .dot {
+  animation: flicker 5s infinite;
+}
+
+.passive {
+  color: rgb(207, 115, 10);
+}
+
+.election .voteButton {
+  float: right;
+  border: 0;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: .5em 2em .5em 2em;
+  cursor: pointer;
+}
+
+.activeButton:hover {
+  color: rgb(221, 221, 221);
+}
+
+.activeButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.passiveButton {
+  background-color: rgb(207, 207, 207);
+  color: black;
+  pointer-events:none;  
+}
+
+.election h3{
+  margin: 0;
+}
+
+.page {
+  width: 100%;
+  min-width: fit-content;
+}
+
+.activeElection {
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  width: 98%;
+  padding: .1em 1em .2em 1em;
+  margin-top: 1em;
+  margin-right: 1em;
+  border-radius: 10px;
+}
+
+hr {
+  color: rgba(0, 0, 0, 0.4);
+  width: 50%;
+  margin: 0;
+}
