@@ -1,7 +1,6 @@
 from db import db
 
-# Definition example of a table
-'''
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -9,4 +8,12 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
-'''
+
+class Candidate(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(160), unique=True, nullable=False)
+
+class Vote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    #user_id = db.Column(db.Integer, nullable=False)
+    candidate_id = db.Column(db.Integer, nullable=False)
