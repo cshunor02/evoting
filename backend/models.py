@@ -56,3 +56,13 @@ def seed(app):
             ]
             db.session.bulk_save_objects(candidates)
             db.session.commit()
+
+        if Vote.query.first() is None:
+            print("Votes are empty, seeding")
+            votes = []
+            candidates = Candidate.query.all()
+            for candidate in candidates:
+                for i in range(random.randint(5, 100)):
+                    votes.append(Vote(candidate_id=candidate.id))
+            db.session.bulk_save_objects(votes)
+            db.session.commit()
