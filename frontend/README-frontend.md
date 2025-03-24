@@ -14,6 +14,4 @@ npm install
 npm run dev
 ```
 
-```
-npm i react-router-dom
-```
+Open localhost (usually it is at port 5173).

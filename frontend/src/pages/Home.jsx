@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './../App.css'
 import Layout from './Layout'
 import { Link } from "react-router-dom";
+import { RxDotFilled } from "react-icons/rx";
 
 const defaultData = {
     '0': {
@@ -51,7 +52,7 @@ function Home() {
                 <div key={key} className='election'>
                     <h3>{defaultData[key].title}</h3>
                     <p>{defaultData[key].description}</p>
-                    <p className={(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'status active' : 'status passive   '}>{(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'Active' : 'Inactive'}</p>
+                    <p className={(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'status active' : 'status passive'}><RxDotFilled className='dot' />{(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'Active' : 'Inactive'}</p>
                     <Link to={{ pathname: `/election/${defaultData[key].id}` }} className={(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'voteButton activeButton' : 'voteButton passiveButton'}>{(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'Vote now' : 'Not available'}</Link>
                 </div>
             ))}
