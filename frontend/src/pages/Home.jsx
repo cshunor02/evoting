@@ -2,6 +2,7 @@ import './../App.css'
 import FadeIn from 'react-fade-in';
 import Elections from './Elections';
 import Results from './Results';
+import AdminDashboard from './AdminDashboad';
 
 function Home() {
 /*
@@ -24,10 +25,7 @@ function Home() {
             
             <Results />
 
-            <div className='activeElection'>
-                <h1 className='title'>Admin dashboard</h1>
-                <p>New values</p>
-            </div>
+            <AdminDashboard />
         </FadeIn>
     </div>
   )
