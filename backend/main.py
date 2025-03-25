@@ -27,7 +27,8 @@ def test_db_connection():
         db.session.execute(text("SELECT 1"))
         return "Database connected successfully!"
     except Exception as e:
-        return f"Database connection failed: {e}"
+        return f"Database connection failed: {e.message}" # or e.value # or status=ourownvalue (depens on BaseException version)
+
 
 # Start the server
 if __name__ == "__main__":
