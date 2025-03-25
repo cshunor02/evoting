@@ -14,6 +14,11 @@
   -webkit-text-size-adjust: 100%;
 }
 
+html, body {
+  scroll-behavior: smooth;
+  overflow: visible;
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -21,14 +26,16 @@ body {
   padding-top: 2.5em;
 } 
 
-a {
+a:not(.titleLink) {
   font-weight: 500;
   color: white;
   text-decoration: inherit;
   padding: 1em 2em 1em 2em;
+  transition: .2s all;
 }
-a:hover {
+a:hover:not(.titleLink) {
   color: #e0e0e0;
+  transition: .2s all;
 }
 
 h1 {
@@ -46,29 +53,38 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  transition: .2s all;
 }
 button:hover {
   border-color: #646cff;
+  transition: .2s all;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.layoutLinks {
-  background-color: #535bf2;
+.layoutLinks:not(.titleLink) {
+  background-color: #535bf2cf;
+  backdrop-filter: blur(10px);
   color: white;
-  position: absolute;
+  position: fixed;
+  z-index: 1000;
   top: 0;
   left: 0;
   display: inline-flex;
-  width: 98.7%;
+  width: 99%;
   padding: .5em;
 }
 
 .layoutLinks h1{
   margin: .5em;
   font-size: 1.5em;
+}
+
+.titleLink {
+  text-decoration: none;
+  color: white;
 }
 
 .layoutLinks ul{

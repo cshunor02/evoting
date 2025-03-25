@@ -2,47 +2,6 @@
   padding: 2rem;
 }
 
-html, body {
-  scroll-behavior: smooth;
-  overflow: visible;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
 .electionPanel{
   display: inline-flex;
   flex-wrap: wrap;
@@ -55,6 +14,7 @@ html, body {
   margin: .5em 1em 0.5em 1em;
   padding: 1em;
   width: 350px;
+  height: 140px;
   position: relative;
 }
 
@@ -99,15 +59,20 @@ html, body {
   border-radius: 10px;
   padding: .5em 2em .5em 2em;
   cursor: pointer;
+  position: absolute;
+  right: 20px;
+  bottom: 15px;
 }
 
 .activeButton:hover {
   color: rgb(221, 221, 221);
+  transition: .2s all;
 }
 
 .activeButton {
   background-color: #3b82f6;
   color: white;
+  transition: .2s all;
 }
 
 .passiveButton {
@@ -125,14 +90,15 @@ html, body {
   min-width: fit-content;
 }
 
-.activeElection {
+.activeElection, .createField {
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   background-color: white;
-  width: 98%;
-  padding: .1em 1em .2em 1em;
+  width: 95%;
+  padding: 1em 2em 1em 2em;
   margin-top: 1em;
   margin-right: 1em;
   border-radius: 10px;
+  position: relative;
 }
 
 hr {
@@ -153,4 +119,136 @@ hr {
 
 .notFound h2{
   color: rgb(95, 95, 95);
+}
+
+.logout {
+  background-color:  #ef4444;
+  border-radius: 5px;
+  color: rgb(243, 243, 243);
+}
+
+.createField input {
+  margin: 0 0 0 1em;
+}
+
+.createField input[type="text"] {
+  background-color: white;
+  font-size: 1em;
+  color: black;
+  border-radius: 5px;
+  width: 400px;
+  height: 30px;
+}
+
+.createField textarea {
+  background-color: white;
+  font-size: 1.2em;
+  color: black;
+  border-radius: 5px;
+  width: 355px;
+  height: 100px;
+}
+
+.createField #desc {
+  vertical-align: top;
+  margin: 0 0 0 1em;
+  height: 50px;
+}
+
+.options {
+  margin-left: 2em;
+}
+
+.options h4 {
+  margin-bottom: .2em;
+}
+
+.optionBlock{
+  margin-left: 1em;
+}
+
+label {
+  margin-left: .5em;
+}
+
+.createField input[type="submit"] {
+  background-color: #3b82f6;
+  color: white;
+  padding: 1em;
+  font-size: 1.2em;
+  border: 0;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  margin-top: 1em;
+  transition: .2s all;
+}
+
+.createField input[type="submit"]:hover {
+  color:rgb(219, 219, 219);
+  transition: .2s all;
+}
+
+.addNewPoll {
+  background-color: #3b83f6cc;
+  backdrop-filter: blur(5px);
+  border-radius: 50%;
+  width: 9px;
+  height: 40px;
+  display: block;
+  text-align: center;
+  position: fixed;
+  z-index: 1000;
+  right: 15px;
+  bottom: 15px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(.9);
+}
+
+.plusButton {
+  color: white;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: 4em;
+}
+
+.pDesc {
+  white-space: collapse;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+  max-height: 48px;
+  font-style: italic;
+}
+
+.pieChart{
+  transition: .1s all;
+  transform: scale(1);
+  margin-left: 3em;
+}
+
+.resultsDivider {
+  width: 100%;
+}
+
+.pieLabelElem {
+  display: 'flex';
+  align-items: 'center';
+  margin-right: 10;
+}
+
+.pieLabels{
+  position: absolute;
+  top: 16em;
+  left: 35em;
+}
+
+.pieMiniBox {
+  display: inline-flex;
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
 }

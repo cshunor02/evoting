@@ -1,22 +1,24 @@
 import { Outlet, Link } from "react-router-dom";
+import { IoIosAdd } from "react-icons/io";
 
 const Layout = () => {
   return (
     <>
+       <Link to="/create" className='addNewPoll'><IoIosAdd className='plusButton' /></Link>
       <nav className="layoutLinks">
-        <h1>E-Voting System</h1>
+      <Link to="/" className="titleLink"><h1>E-Voting System</h1></Link>
         <ul>
           <li>
             <Link to="/">Dashboard</Link>
           </li>
           <li>
-            <Link to="/elections" onClick={ (event) => event.preventDefault() }>Elections</Link>
+            <Link to="/elections">Elections</Link>
           </li>
           <li>
-            <Link to="/results" onClick={ (event) => event.preventDefault() }>Results</Link>
+            <Link to="/results">Results</Link>
           </li>
           <li>
-            <Link to="/"onClick={ (event) => event.preventDefault() }>Logout</Link>
+            <Link to="/"onClick={ (event) => event.preventDefault() } className='logout'>Logout</Link>
           </li>
         </ul>
       </nav>
