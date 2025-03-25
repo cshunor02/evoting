@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import './../App.css'
-import Layout from './Layout'
 import { Link } from "react-router-dom";
 import { RxDotFilled } from "react-icons/rx";
+import FadeIn from 'react-fade-in';
 
 const defaultData = {
     '0': {
@@ -44,8 +44,8 @@ function Home() {
       }, []);
 
   return (
-    <div className='page'>
-        <Layout />
+      <div className='page'>
+        <FadeIn>
         <h2>Available Elections</h2>
         <div className='electionPanel'>
             {Object.keys(defaultData).map(key => (
@@ -63,6 +63,7 @@ function Home() {
             <hr />
             <p>Gotta move on</p>
         </div>
+    </FadeIn>
     </div>
   )
 }

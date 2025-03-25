@@ -4,11 +4,13 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import './App.css'
 import Election from "./pages/Election";
+import Layout from './pages/Layout'
 
 function App() {
 
   return (
     <div className="App">
+      <Layout />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

@@ -7,7 +7,7 @@ const Layout = () => {
         <h1>E-Voting System</h1>
         <ul>
           <li>
-            <Link to="/dashboard" onClick={ (event) => event.preventDefault() }>Dashboard</Link>
+            <Link to="/">Dashboard</Link>
           </li>
           <li>
             <Link to="/elections" onClick={ (event) => event.preventDefault() }>Elections</Link>
