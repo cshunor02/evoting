@@ -18,7 +18,9 @@ const Layout = () => {
             <Link to="/results">Results</Link>
           </li>
           <li>
-            <Link to="/"onClick={ (event) => event.preventDefault() } className='logout'>Logout</Link>
+            {
+               //<Link to="/"onClick={ (event) => event.preventDefault() } className='logout'>Logout</Link>
+            }
           </li>
         </ul>
       </nav>

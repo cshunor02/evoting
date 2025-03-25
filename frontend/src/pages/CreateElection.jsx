@@ -4,6 +4,10 @@ import FadeIn from 'react-fade-in';
 
 function CreateElection() {
 
+    useEffect(()=>{
+        window.scrollTo(0, 0);
+    },[])
+
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [start_date, setStartDate] = useState('')
