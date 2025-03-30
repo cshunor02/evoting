@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from db import db
+import random
 
 
 @dataclass
