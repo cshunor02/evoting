@@ -1,0 +1,29 @@
+services:
+  backend:
+    image: backend
+    build: backend
+    ports:
+      - 8080:8080
+    volumes:
+      - ./backend:/backend
+    environment:
+      DATABASE_URL: "mariadb+pymysql://vote:Qwert12345@mariadb/vote?charset=utf8mb4"
+
+  mariadb:
+    image: mariadb
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: "Qwert12345"
+      MARIADB_DATABASE: "vote"
+      MARIADB_USER: "vote"
+      MARIADB_PASSWORD: "Qwert12345"
+
+  frontend:
+    image: frontend
+    build: frontend
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - 5173:5173
+

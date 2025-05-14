@@ -1,0 +1,7 @@
+flask
+routes
+dotenv
+sqlalchemy
+flask_sqlalchemy
+flask_migrate
+pymysql
