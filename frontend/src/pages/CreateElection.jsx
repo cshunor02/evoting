@@ -16,10 +16,6 @@ function CreateElection() {
     const [choices, setChoices] = useState('')
     const [anonymity, setAnonymity] = useState(true)
 
-    function setAnonym(e) {
-        e == 'yes' ? setAnonymity(true) : setAnonymity(false)
-    }
-
     function storeNewPoll(e) {
         e.preventDefault()
         if (title == '' || description == '' || start_date == '' || end_date == '' || choices == '') {
@@ -111,16 +107,6 @@ function CreateElection() {
                                 placeholder='Option A
 Option B
 ...'></textarea>
-                            </div>
-                    </div>
-                    <div className='options'>
-                        <h4>Anonymity</h4>
-                            <div className='optionBlock'>
-                                <p>Does anonymity required?</p>
-                                <input type="radio" id="no" name="anonymity" value="yes" onChange={e => setAnonym(e.target.value)} defaultChecked={anonymity == true}/>
-                                <label htmlFor="no">Yes, no names are collected</label><br />
-                                <input type="radio" id="yes" name="anonymity" value="no" onChange={e => setAnonym(e.target.value)} defaultChecked={anonymity == false}/>
-                                <label htmlFor="yes">No, collect names</label><br />
                             </div>
                     </div>
                     <p>
