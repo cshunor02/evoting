@@ -1,54 +1,83 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './../App.css';
+import { PieChart } from '@mui/x-charts/';
 import FadeIn from 'react-fade-in';
-
-const defaultData = {
-    '0': {
-        'id' : 0,
-        'title' : 'Presidental Election 2024',
-        'description' : 'This is a description field, where if the description is too long, it overflows.',
-        'start_time' : '2012-04-23T18:25:43.511Z',
-        'end_time' : '2025-05-05T18:25:43.511Z'
-    },
-    '1': {
-        'id' : 1,
-        'title' : 'Local Council Election',
-        'description' : 'This is a description field, where if the description is too long, it overflows. The maximum line numbers should be only 2 lines.',
-        'start_time' : '2025-01-12',
-        'end_time' : '2025-03-23'
-    },
-    '2': {
-        'id' : 2,
-        'title' : 'High School Kahoot',
-        'description' : 'This is a description field, where if the description is too long, it overflows.',
-        'start_time' : '2025-01-12',
-        'end_time' : '2025-05-05'
-    },
-    '3': {
-        'id' : 3,
-        'title' : 'G0ogl3 F0rm5',
-        'description' : 'This is a description field, where if the description is too long, it overflows.',
-        'start_time' : '2025-01-12',
-        'end_time' : '2025-05-05'
-    }
-}
 
 const Results = () => {
 
+    useEffect(() => {
+        const randomColors = Array.from({ length: 10 }, () => {
+            const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+            return `#${randomColor}`;
+        });
+        setColors(randomColors);
+    }, [])
+
+    const [data, setData] = useState([])
+    const [colors, setColors] = useState()
+
+    useEffect(() => {
+        /*
+        fetch('http://localhost:8000/polls/')
+            .then((res) => res.json())
+            .then((data) => {
+                setData(data)
+            })
+        */
+        setData([
+                { id: 0, value: 10, label: 'A' },
+                { id: 1, value: 10, label: 'B' },
+                { id: 3, value: 20, label: 'C' },
+                { id: 4, value: 5, label: 'D' },
+            ])
+    }, [])
+
     return (
         <FadeIn>
+        <div className="App">
             <h1>Election Results</h1>
-            <p>Choose an election to see the results!</p>
-            <div className='electionPanel'>
-                {Object.keys(defaultData).map(key => (
-                    <div key={key} className='results'>
-                        <h3>{defaultData[key].title}</h3>
-                        <p className='resDesc'>{defaultData[key].description}</p>
-                        <p className='resDeadline'>Deadline: {defaultData[key].end_time}</p>
-                        <Link to={{ pathname: `/result/${defaultData[key].id}` }} className='voteButton activeButton resultsButton'>See results</Link>
-                    </div>
-                ))}
+            <div className='activeElection'>
+                <h2>Pie chart of the results</h2>
+                <h3>Question</h3>
+                <PieChart colors={colors}
+                    series={[
+                    {
+                        data: data,
+                    innerRadius: 45,
+                    outerRadius: 200,
+                    paddingAngle: 3,
+                    cornerRadius: 10,
+                    startAngle: 0,
+                    endAngle: 360,
+                    cx: 200,
+                    cy: 200,
+                    highlightScope: { fade: 'global', highlight: 'item' },
+                    faded: { innerRadius: 45, additionalRadius: 0, color: 'gray' },
+                    }
+
+                ]}
+                    width={550}
+                    height={450}
+                    margin={{ right: 0, top: 0}}
+                    slotProps={{
+                        legend: { hidden: true },
+                      }}
+                className='pieChart' />
+                <div className='pieLabels'>
+                    {Object.keys(data).map((i,key) => (
+                        <div key={key} className='pieLabelElem'>
+                            <div className='pieMiniBox' style={{backgroundColor: colors[i] }}>
+                            </div>
+                            <span>{data[key].label}</span>
+                        </div>
+                    ))}
             </div>
+
+            <hr className='resultsDivider' />
+
+
+        </div>
+        </div>
         </FadeIn>
     );
 };
