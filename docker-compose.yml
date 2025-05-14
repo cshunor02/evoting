@@ -8,7 +8,8 @@ services:
       - ./backend:/backend
     environment:
       DATABASE_URL: "mariadb+pymysql://vote:Qwert12345@mariadb/vote?charset=utf8mb4"
-    depends_on: mariadb
+    depends_on:
+      - mariadb
     restart: always
 
   mariadb:
