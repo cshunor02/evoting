@@ -8,6 +8,8 @@ services:
       - ./backend:/backend
     environment:
       DATABASE_URL: "mariadb+pymysql://vote:Qwert12345@mariadb/vote?charset=utf8mb4"
+    depends_on: mariadb
+    restart: always
 
   mariadb:
     image: mariadb
@@ -18,6 +20,7 @@ services:
       MARIADB_DATABASE: "vote"
       MARIADB_USER: "vote"
       MARIADB_PASSWORD: "Qwert12345"
+    restart: always
 
   frontend:
     image: frontend
@@ -26,4 +29,5 @@ services:
       - ./frontend:/frontend
     ports:
       - 5173:5173
+    restart: always
 
