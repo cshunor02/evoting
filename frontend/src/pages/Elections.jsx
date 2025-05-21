@@ -4,9 +4,6 @@ import { RxDotFilled } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import FadeIn from 'react-fade-in';
 
-const defaultData = {
-}
-
 function Elections() {
     const [data, setData] = useState({})
 
