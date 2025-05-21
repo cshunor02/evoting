@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import './../App.css';
 import { PieChart } from '@mui/x-charts/';
+import { pieArcLabelClasses } from '@mui/x-charts/PieChart/PieArcLabel';
 import FadeIn from 'react-fade-in';
 
 const Results = () => {
 
     useEffect(() => {
         const randomColors = Array.from({ length: 10 }, () => {
-            const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-            return `#${randomColor}`;
+            return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6);
         });
         setColors(randomColors);
     }, [])
@@ -25,10 +25,10 @@ const Results = () => {
             })
         */
         setData([
-                { id: 0, value: 10, label: 'A' },
-                { id: 1, value: 10, label: 'B' },
-                { id: 3, value: 20, label: 'C' },
-                { id: 4, value: 5, label: 'D' },
+                { id: 0, value: 17, label: 'A' },
+                { id: 1, value: 16, label: 'B' },
+                { id: 3, value: 43, label: 'C' },
+                { id: 4, value: 22, label: 'D' },
             ])
     }, [])
 
@@ -39,23 +39,32 @@ const Results = () => {
             <div className='activeElection'>
                 <h2>Pie chart of the results</h2>
                 <h3>Question</h3>
-                <PieChart colors={colors}
+                <PieChart colors={colors} 
                     series={[
                     {
                         data: data,
                     innerRadius: 45,
                     outerRadius: 200,
                     paddingAngle: 3,
-                    cornerRadius: 10,
+                    cornerRadius: 20,
                     startAngle: 0,
+                    arcLabel: (item) => `${item.value}%`,
+                    arcLabelMinAngle: 35,
+                    arcLabelRadius: '60%',
                     endAngle: 360,
                     cx: 200,
                     cy: 200,
                     highlightScope: { fade: 'global', highlight: 'item' },
                     faded: { innerRadius: 45, additionalRadius: 0, color: 'gray' },
                     }
-
+                    
                 ]}
+                sx={{
+                    [`& .${pieArcLabelClasses.root}`]: {
+                      fontWeight: 'bold',
+                      fontSize: 18,
+                    },
+                  }}
                     width={550}
                     height={450}
                     margin={{ right: 0, top: 0}}
