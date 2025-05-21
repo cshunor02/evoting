@@ -299,3 +299,8 @@ label {
   border-radius: 15px;
   margin: 1em;
 }
+
+.pieChart{
+  color: white;
+  text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
+}
