@@ -15,22 +15,21 @@ class Election(db.Model):
 
     electionId : str
     electionTitle : str
-    startDate : datetime
-    endDate : datetime
+    startDate : str
+    endDate : str
     pollType : str
     status : str
     isAnonymous : bool
 
     electionId = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     electionTitle = db.Column(db.String(100), nullable=False)
-    startDate = db.Column(db.DateTime, nullable=False)
-    endDate = db.Column(db.DateTime, nullable=False)
+    startDate = db.Column(db.String(100), nullable=False)
+    endDate = db.Column(db.String(100), nullable=False)
     pollType = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False)
     isAnonymous = db.Column(db.Boolean, nullable=False)
 
     votes = db.relationship('Vote', backref='election', lazy=True)
-    policies = db.relationship('VotingPolicy', backref='election', lazy=True)
     candidates = db.relationship('Candidate', backref='election', lazy=True)
 
 @dataclass

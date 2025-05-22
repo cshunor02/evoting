@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 import sys
 from routes import register_blueprints
 from config import SQLALCHEMY_DATABASE_URI
@@ -11,10 +12,10 @@ from sqlalchemy import text
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 init_db(app)
-seed(app)
 migrate = Migrate(app, db)
 
 register_blueprints(app)

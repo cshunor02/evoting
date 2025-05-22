@@ -8,19 +8,30 @@ function Elections() {
     const [data, setData] = useState({})
 
     useEffect(() => {
-        setData(() => defaultData)
-      }, []);
+        fetch('http://127.0.0.1:8080/allpoll')
+        .then(response => response.json()) 
+        .then(data => {
+            const object = {};
+            data.forEach((item, index) => {
+                object[(index + 1).toString()] = item
+                })
+
+            setData(() => object)
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        })
+      }, [])
 
     return (
         <FadeIn>
             <h1>Available Elections</h1>
             <div className='electionPanel'>
-                {Object.keys(defaultData).map(key => (
+                {Object.keys(data).map(key => (
                     <div key={key} className='election'>
-                        <h3>{defaultData[key].title}</h3>
-                        <p className='pDesc'>{defaultData[key].description}</p>
-                        <p className={(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'status active' : 'status passive'}><RxDotFilled className='dot' />{(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'Active' : 'Inactive'}</p>
-                        <Link to={{ pathname: `/election/${defaultData[key].id}` }} className={(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'voteButton activeButton' : 'voteButton passiveButton'}>{(new Date(defaultData[key].end_time) - new Date()) >= 0 ? 'Vote now' : 'Not available'}</Link>
+                        <h3>{data[key].title}</h3>
+                        <p className={(new Date(data[key].end_date) - new Date()) >= 0 ? 'status active' : 'status passive'}><RxDotFilled className='dot' />{(new Date(data[key].end_date) - new Date()) >= 0 ? 'Active' : 'Inactive'}</p>
+                        <Link to={{ pathname: `/election/${data[key].id}` }} className={(new Date(data[key].end_date) - new Date()) >= 0 ? 'voteButton activeButton' : 'voteButton passiveButton'}>{(new Date(data[key].end_date) - new Date()) >= 0 ? 'Vote now' : 'Not available'}</Link>
                     </div>
                 ))}
             </div>

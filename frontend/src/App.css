@@ -13,8 +13,19 @@
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   margin: .5em 1em 0.5em 1em;
   padding: 1em;
-  width: 350px;
-  height: 140px;
+  width: 280px;
+  height: 90px;
+  position: relative;
+}
+
+.candidate {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 1em;
+  padding: .05em 1em 0.5em 1em;
+  width: 280px;
+  height: 100px;
   position: relative;
 }
 
@@ -89,7 +100,7 @@
   color: rgb(207, 115, 10);
 }
 
-.election .voteButton {
+.election .voteButton, .candidate .voteButton {
   float: right;
   border: 0;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);

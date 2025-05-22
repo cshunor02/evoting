@@ -24,10 +24,13 @@ services:
     restart: always
 
   frontend:
+    build: ./frontend
     image: frontend
-    build: frontend
     volumes:
       - ./frontend:/frontend
+      - /frontend/node_modules
+    working_dir: /frontend
+    command: npm run dev
     ports:
       - 5173:5173
     restart: always

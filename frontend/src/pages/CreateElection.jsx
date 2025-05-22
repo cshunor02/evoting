@@ -18,9 +18,9 @@ function CreateElection() {
 
     function storeNewPoll(e) {
         e.preventDefault()
-        if (title == '' || description == '' || start_date == '' || end_date == '' || choices == '') {
-            console.log(title, description, start_date, end_date, choices)
-            console.log(title == '', description == '', start_date == '', end_date == '', choices == '')
+        if (title == '' || start_date == '' || end_date == '' || choices == '') {
+            console.log(title, start_date, end_date, choices)
+            console.log(title == '', start_date == '', end_date == '', choices == '')
             alert('Please fill all the fields')
             return
         }
@@ -39,8 +39,7 @@ function CreateElection() {
             }
         })
 
-        /*
-        fetch('http://localhost:8000/polls/', {
+        fetch('http://127.0.0.1:8080/polls/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,17 +53,9 @@ function CreateElection() {
                 anonymity: anonymity,
                 options: choices.split('\n')
             })
+        }).then((response) => {
+            console.log(response)
         })
-        */
-       console.log(JSON.stringify({
-            title: title,
-            description: description,
-            start_date: start_date,
-            end_date: end_date,
-            poll_type: pollType,
-            anonymity: anonymity,
-            options: choices.split('\n')
-        }))
     }
 
     return (
@@ -75,10 +66,6 @@ function CreateElection() {
                     <p>
                         Title:
                         <input type="text" onChange={(e) => setTitle(e.target.value)} value={title} />
-                    </p>
-                    <p>
-                        Description:
-                        <textarea name="desc" id='desc' cols="50" rows="2" onChange={(e) => setDescription(e.target.value)} value={description}></textarea>
                     </p>
                     <p>
                         Start date:

@@ -17,13 +17,6 @@ const Results = () => {
     const [colors, setColors] = useState()
 
     useEffect(() => {
-        /*
-        fetch('http://localhost:8000/polls/')
-            .then((res) => res.json())
-            .then((data) => {
-                setData(data)
-            })
-        */
         setData([
                 { id: 0, value: 17, label: 'A' },
                 { id: 1, value: 16, label: 'B' },

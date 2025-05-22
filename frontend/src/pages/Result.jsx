@@ -10,12 +10,6 @@ const defaultData = {
 
 const Result = () => {
 
-    const [data, setData] = useState({
-        '0': { id: 0, value: 10, label: 'A' },
-        '1': { id: 1, value: 10, label: 'B' },
-        '2': { id: 3, value: 20, label: 'C' },
-    })
-
     return (
         <FadeIn>
             <h1>Election Results</h1>

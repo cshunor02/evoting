@@ -2,6 +2,7 @@ import json
 from flask import Blueprint, jsonify
 from models import *
 from flask import request
+from datetime import datetime
 
 blueprint = Blueprint('home', __name__)
 
@@ -12,8 +13,8 @@ def home():
 # Helper function
 def candidate_to_dict(candidate):
     return {
-        'id': candidate.id,
-        'name': candidate.name,
+        'id': candidate.candidateId,
+        'name': candidate.candidateName,
     }
 
 # Results.jsx
@@ -22,13 +23,32 @@ def votes():
     candidates = Candidate.query.all()
     res = []
     for candidate in candidates:
-        votes = Vote.query.filter(Vote.candidate_id == candidate.id)
+        votes = Vote.query.filter(Vote.candidateId == candidate.candidateId)
         res.append({'name': candidate.name, 'votes': votes.count()})
 
     return jsonify(res)
 
+@blueprint.route('/allpoll', methods=['GET'])
+def get_all_polls():
+    polls = Election.query.all()
+    polls_list = []
+    for poll in polls:
+        candidates = Candidate.query.filter_by(electionId=poll.electionId).all()
+        candidates_list = [candidate_to_dict(c) for c in candidates]
+        polls_list.append({
+            "id": poll.electionId,
+            "title": poll.electionTitle,
+            "start_date": poll.startDate,
+            "end_date": poll.endDate,
+            "poll_type": poll.pollType,
+            "anonymity": poll.isAnonymous,
+            "candidates": candidates_list
+        })
+
+    return jsonify(polls_list), 200
+
 # Election.jsx, EditElection.jsx
-@blueprint.route('/getpoll/<int:id>', methods=['GET'])
+@blueprint.route('/getpoll/<string:id>', methods=['GET'])
 def get_poll(id):
     poll = Election.query.get(id)
     if not poll:
@@ -38,14 +58,12 @@ def get_poll(id):
     candidates_list = [candidate_to_dict(c) for c in candidates]
 
     return jsonify({
-        "id": poll.id,
+        "id": poll.electionId,
         "title": poll.electionTitle,
-        "description": poll.description,
-        "start_date": poll.start_date,
-        "end_date": poll.end_date,
-        "poll_type": poll.poll_type,
-        "anonymity": poll.anonymity,
-        "status": poll.status,
+        "start_date": poll.startDate,
+        "end_date": poll.endDate,
+        "poll_type": poll.pollType,
+        "anonymity": poll.isAnonymous,
         "candidates": candidates_list
     }), 200
 
@@ -57,38 +75,31 @@ def create_poll():
     if not data or 'title' not in data:
         return jsonify({'error': 'Missing title'}), 400
     
-    if 'description' not in data or 'start_date' not in data or 'end_date' not in data or 'poll_type' not in data or 'anonymity' not in data:
+    if 'start_date' not in data or 'end_date' not in data or 'poll_type' not in data or 'anonymity' not in data:
         return jsonify({'error': 'Missing required fields'}), 400
-
+    
     new_poll = Election()
     new_poll.electionTitle = data['title']
-    new_poll.description = data['description']
-    new_poll.start_date = data['start_date']
-    new_poll.end_date = data['end_date']
-    new_poll.poll_type = data['poll_type']
-    new_poll.anonymity = data['anonymity']
-
-    time_now = datetime.utcnow()
-    if new_poll.start_date > time_now:
-        new_poll.status = 'upcoming'
-    elif new_poll.start_date <= time_now <= new_poll.end_date:
-        new_poll.status = 'active'
-    else:
-        new_poll.status = 'ended'
+    new_poll.startDate = data['start_date']
+    new_poll.endDate = data['end_date']
+    new_poll.pollType = data['poll_type']
+    new_poll.isAnonymous = data['anonymity']
+    new_poll.status = "undefined"
     
     db.session.add(new_poll)
     db.session.commit()
 
-    options = data.get('options', [])
+    options = data['options']
 
     for option in options:
         candidate = Candidate()
-        candidate.electionId = new_poll.id
+        candidate.candidateId = str(uuid.uuid4())
+        candidate.electionId = new_poll.electionId
         candidate.candidateName = option
         db.session.add(candidate)
         db.session.commit()
 
     return jsonify({
-        "id": new_poll.id,
-        "title": new_poll.title
+        "id": new_poll.electionId,
+        "title": new_poll.electionTitle
     }), 200
