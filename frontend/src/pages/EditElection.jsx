@@ -1,12 +1,54 @@
 import { useEffect, useState } from 'react';
 import './../App.css'
 import FadeIn from 'react-fade-in';
+import { useParams } from 'react-router-dom';
 
-function CreateElection() {
+function EditElection() {
+
+    const params = useParams();
+    const id = params.id;
 
     useEffect(()=>{
         window.scrollTo(0, 0);
     },[])
+
+    function convertDate(date) {
+        const datetime = new Date(date)
+        const pad = (n) => n.toString().padStart(2, '0')
+
+        const year = datetime.getFullYear()
+        const month = pad(datetime.getMonth() + 1)
+        const day = pad(datetime.getDate())
+        const hour = pad(datetime.getHours())
+        const minute = pad(datetime.getMinutes())
+
+        return `${year}-${month}-${day}T${hour}:${minute}`
+    }
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:8080/getpoll/' + id)
+        .then(response => response.json()) 
+        .then(data => {
+            if (data['error'] === 'Poll not found') {
+                return
+            } else {
+                setTitle(() => data.title)
+                setDescription(() => data.description)
+                setStartDate(() => convertDate(data.start_date))
+                setEndDate(() => convertDate(data.end_date))
+                setPollType(() => data.poll_type)
+                const options = []
+                data.candidates.forEach((option) => {
+                    options.push(option.name)
+                })
+                setChoices(() => options.join('\n'))
+                setAnonymity(() => data.anonymity)
+            }
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        })
+      }, [id])
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -16,7 +58,7 @@ function CreateElection() {
     const [choices, setChoices] = useState('')
     const [anonymity, setAnonymity] = useState(true)
 
-    function storeNewPoll(e) {
+    function storeUpdatedPoll(e) {
         e.preventDefault()
         if (title == '' || start_date == '' || end_date == '' || choices == '') {
             console.log(title, start_date, end_date, choices)
@@ -39,16 +81,17 @@ function CreateElection() {
             }
         })
 
-        fetch('http://127.0.0.1:8080/polls/', {
+        fetch('http://127.0.0.1:8080/updatepoll/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                id: id,
                 title: title,
                 description: description,
-                start_date: new Date(start_date).toISOString(),
-                end_date: new Date(end_date).toISOString(),
+                start_date: start_date,
+                end_date: end_date,
                 poll_type: pollType,
                 anonymity: anonymity,
                 options: choices.split('\n')
@@ -62,7 +105,7 @@ function CreateElection() {
     return (
         <div className="App">
             <FadeIn>
-                <h1>Create a new Poll / Election</h1>
+                <h1>Edit selected Poll / Election</h1>
                 <div className='createField'>
                     <p>
                         Title:
@@ -98,7 +141,7 @@ Option B
                             </div>
                     </div>
                     <p>
-                        <input type="submit" value='Create new poll' onClick={e => storeNewPoll(e)} />
+                        <input type="submit" value='Edit existing poll' onClick={e => storeUpdatedPoll(e)} />
                     </p>
                 </div>
             </FadeIn>
@@ -106,4 +149,4 @@ Option B
     );
 };
 
-export default CreateElection;
+export default EditElection;

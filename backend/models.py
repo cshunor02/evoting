@@ -4,6 +4,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from db import db
 import random
+from datetime import datetime
 
 
 def generate_uuid():
@@ -29,8 +30,16 @@ class Election(db.Model):
     status = db.Column(db.String(20), nullable=False)
     isAnonymous = db.Column(db.Boolean, nullable=False)
 
-    votes = db.relationship('Vote', backref='election', lazy=True)
-    candidates = db.relationship('Candidate', backref='election', lazy=True)
+    votes = db.relationship(
+        'Vote',
+        backref='election',
+        cascade='all, delete-orphan'
+    )
+    candidates = db.relationship(
+        'Candidate',
+        backref='election',
+        cascade='all, delete-orphan'
+    )
 
 @dataclass
 class Vote(db.Model):
@@ -39,13 +48,11 @@ class Vote(db.Model):
     voteId : str
     electionId : str
     timestamp : datetime
-    encryptedData : str
     candidateId : str
 
     voteId = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     electionId = db.Column(db.String(36), db.ForeignKey('elections.electionId'), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    encryptedData = db.Column(db.Text, nullable=False)
     candidateId = db.Column(db.String(36), db.ForeignKey('candidates.candidateId'), nullable=True)
 
 @dataclass

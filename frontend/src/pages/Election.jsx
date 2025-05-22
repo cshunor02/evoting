@@ -27,6 +27,24 @@ function Election() {
         })
       }, [id])
 
+    function castVote(e, id) {
+        e.preventDefault()
+        fetch('http://127.0.0.1:8080/vote/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                poll_id: allData.id,
+                candidate_id: id,
+            })
+        }).then((response) => {
+            console.log(response)
+            window.location.href = '/'
+        })
+        
+    }
+
     return (
         <div className="App">
             <FadeIn>
@@ -37,7 +55,7 @@ function Election() {
                     {Object.keys(data).map(key => (
                         <li key={key} className='candidate'>
                             <h3>{data[key].name}</h3>
-                            <input type="button" className='voteButton' value={"Vote to " + data[key].name} onClick={() => {}} />
+                            <input type="button" className='voteButton' value={"Vote to " + data[key].name} onClick={(e) => {castVote(e, data[key].id)}} />
                         </li>
                     ))}
                 </ul>
