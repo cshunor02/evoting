@@ -1,92 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './../App.css';
-import { PieChart } from '@mui/x-charts/';
-import { pieArcLabelClasses } from '@mui/x-charts/PieChart/PieArcLabel';
+import { RxDotFilled } from "react-icons/rx";
+import { Link } from "react-router-dom";
 import FadeIn from 'react-fade-in';
 
-const Results = () => {
+function Results() {
+    const [data, setData] = useState({})
 
     useEffect(() => {
-        const randomColors = Array.from({ length: 10 }, () => {
-            return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6);
-        });
-        setColors(randomColors);
-    }, [])
+        fetch('http://127.0.0.1:8080/allpoll')
+        .then(response => response.json()) 
+        .then(data => {
+            const object = {};
+            data.forEach((item, index) => {
+                object[(index + 1).toString()] = item
+                })
 
-    const [data, setData] = useState([])
-    const [colors, setColors] = useState()
-
-    useEffect(() => {
-        /*
-        fetch('http://localhost:8000/polls/')
-            .then((res) => res.json())
-            .then((data) => {
-                setData(data)
-            })
-        */
-        setData([
-                { id: 0, value: 17, label: 'A' },
-                { id: 1, value: 16, label: 'B' },
-                { id: 3, value: 43, label: 'C' },
-                { id: 4, value: 22, label: 'D' },
-            ])
-    }, [])
+            setData(() => object)
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        })
+      }, [])
 
     return (
         <FadeIn>
-        <div className="App">
-            <h1>Election Results</h1>
-            <div className='activeElection'>
-                <h2>Pie chart of the results</h2>
-                <h3>Question</h3>
-                <PieChart colors={colors} 
-                    series={[
-                    {
-                        data: data,
-                    innerRadius: 45,
-                    outerRadius: 200,
-                    paddingAngle: 3,
-                    cornerRadius: 20,
-                    startAngle: 0,
-                    arcLabel: (item) => `${item.value}%`,
-                    arcLabelMinAngle: 35,
-                    arcLabelRadius: '60%',
-                    endAngle: 360,
-                    cx: 200,
-                    cy: 200,
-                    highlightScope: { fade: 'global', highlight: 'item' },
-                    faded: { innerRadius: 45, additionalRadius: 0, color: 'gray' },
-                    }
-                    
-                ]}
-                sx={{
-                    [`& .${pieArcLabelClasses.root}`]: {
-                      fontWeight: 'bold',
-                      fontSize: 18,
-                    },
-                  }}
-                    width={550}
-                    height={450}
-                    margin={{ right: 0, top: 0}}
-                    slotProps={{
-                        legend: { hidden: true },
-                      }}
-                className='pieChart' />
-                <div className='pieLabels'>
-                    {Object.keys(data).map((i,key) => (
-                        <div key={key} className='pieLabelElem'>
-                            <div className='pieMiniBox' style={{backgroundColor: colors[i] }}>
-                            </div>
-                            <span>{data[key].label}</span>
-                        </div>
-                    ))}
+            <h1>Results</h1>
+            <p>To check a poll's result, click on one of the following polls:</p>
+            <div className='electionPanel'>
+                {Object.keys(data).map(key => (
+                    <div key={key} className='election'>
+                        <h3>{data[key].title}</h3>
+                        <p className={(new Date(data[key].end_date) - new Date()) >= 0 ? 'status active' : 'status passive'}><RxDotFilled className='dot' />{(new Date(data[key].end_date) - new Date()) >= 0 ? 'Active' : 'Inactive'}</p>
+                        <Link to={{ pathname: `/result/${data[key].id}` }} className='voteButton activeButton'>Results</Link>
+                    </div>
+                ))}
             </div>
-
-            <hr className='resultsDivider' />
-
-
-        </div>
-        </div>
         </FadeIn>
     );
 };

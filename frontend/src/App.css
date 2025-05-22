@@ -13,8 +13,25 @@
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   margin: .5em 1em 0.5em 1em;
   padding: 1em;
-  width: 350px;
-  height: 140px;
+  width: 300px;
+  height: 100px;
+  position: relative;
+}
+
+.election h3 {
+  margin-top: 0;
+  width: 70%;
+  line-height: 1em;
+}
+
+.candidate {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 1em;
+  padding: .05em 1em 0.5em 1em;
+  width: 280px;
+  height: 100px;
   position: relative;
 }
 
@@ -89,7 +106,7 @@
   color: rgb(207, 115, 10);
 }
 
-.election .voteButton {
+.election .voteButton, .candidate .voteButton {
   float: right;
   border: 0;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
@@ -110,6 +127,40 @@
   background-color: #3b82f6;
   color: white;
   transition: .2s all;
+}
+
+.editButton, .deleteButton {
+  background-color: #daf63bcc;
+  backdrop-filter: blur(5px);
+  border-radius: 50%;
+  width: 0px;
+  height: 30px;
+  display: block;
+  padding: 0;
+  text-align: left;
+  position: absolute;
+  z-index: 800;
+  right: 0;
+  top: 0;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(.6);
+}
+
+.deleteButton {
+  background-color: #ef4444;
+  right: 50px;
+}
+
+
+.editButton svg, .deleteButton svg {
+  color: white;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 13px;
+  left: 15px;
+  font-size: 2.2em;
+  color: black;
 }
 
 .passiveButton {

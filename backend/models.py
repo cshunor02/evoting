@@ -1,72 +1,68 @@
+from db import db
+import uuid
+from datetime import datetime
 from dataclasses import dataclass
 from db import db
 import random
+from datetime import datetime
 
 
-@dataclass
-class User(db.Model):
-    id: int
-    username: str
-    email: str
-    job: str
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    job = db.Column(db.String(100), nullable=True)  
-
-
-    def __repr__(self):
-        return f"<User {self.username}>"
-
+def generate_uuid():
+    return str(uuid.uuid4())
 
 @dataclass
-class Candidate(db.Model):
-    id: int
-    name: str
+class Election(db.Model):
+    __tablename__ = 'elections'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(160), unique=True, nullable=False)
+    electionId : str
+    electionTitle : str
+    startDate : str
+    endDate : str
+    pollType : str
+    status : str
+    isAnonymous : bool
 
+    electionId = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    electionTitle = db.Column(db.String(100), nullable=False)
+    startDate = db.Column(db.String(100), nullable=False)
+    endDate = db.Column(db.String(100), nullable=False)
+    pollType = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    isAnonymous = db.Column(db.Boolean, nullable=False)
+
+    votes = db.relationship(
+        'Vote',
+        backref='election',
+        cascade='all, delete-orphan'
+    )
+    candidates = db.relationship(
+        'Candidate',
+        backref='election',
+        cascade='all, delete-orphan'
+    )
 
 @dataclass
 class Vote(db.Model):
-    id: int
-    #user_id = int
-    candidate_id: int
+    __tablename__ = 'votes'
 
-    id = db.Column(db.Integer, primary_key=True)
-    #user_id = db.Column(db.Integer, nullable=False)
-    candidate_id = db.Column(db.Integer, nullable=False)
+    voteId : str
+    electionId : str
+    timestamp : datetime
+    candidateId : str
 
+    voteId = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    electionId = db.Column(db.String(36), db.ForeignKey('elections.electionId'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    candidateId = db.Column(db.String(36), db.ForeignKey('candidates.candidateId'), nullable=True)
 
+@dataclass
+class Candidate(db.Model):
+    __tablename__ = 'candidates'
 
-def seed(app):
-    with app.app_context():
-        if User.query.first() is None:
-            print("User empty, seeding")
-            users = [
-                User(username='john', email='john@voter.org')
-            ]
-            db.session.bulk_save_objects(users)
-            db.session.commit()
+    candidateId : str
+    electionId : str
+    candidateName : str
 
-        if Candidate.query.first() is None:
-            print("Candidate empty, seeding")
-            candidates = [
-                Candidate(name='John Wick'),
-                Candidate(name='Jane Doe'),
-                Candidate(name='Kis Istvan')
-            ]
-            db.session.bulk_save_objects(candidates)
-            db.session.commit()
-
-        if Vote.query.first() is None:
-            print("Votes are empty, seeding")
-            votes = []
-            candidates = Candidate.query.all()
-            for candidate in candidates:
-                for i in range(random.randint(5, 100)):
-                    votes.append(Vote(candidate_id=candidate.id))
-            db.session.bulk_save_objects(votes)
-            db.session.commit()
+    candidateId = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    electionId = db.Column(db.String(36), db.ForeignKey('elections.electionId'), nullable=False)
+    candidateName = db.Column(db.String(100), nullable=False)

@@ -18,13 +18,6 @@ function Home() {
         <FadeIn>
             <Elections />
 
-            <div className='activeElection'>
-                <h1 className='title'>Presidental Election 2024</h1>
-                <p>Some options here</p>
-            </div>
-            
-            <Results />
-
             <AdminDashboard />
         </FadeIn>
     </div>

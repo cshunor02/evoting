@@ -5,3 +5,5 @@ sqlalchemy
 flask_sqlalchemy
 flask_migrate
 pymysql
+flask_cors
+datetime

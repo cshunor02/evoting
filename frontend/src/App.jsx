@@ -8,6 +8,7 @@ import CreateElection from "./pages/CreateElection";
 import Elections from "./pages/Elections";
 import Results from "./pages/Results";
 import Result from "./pages/Result";
+import EditElection from "./pages/EditElection";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/elections" element={<Elections />} />
           <Route path="/election/:id" element={<Election />} />
           <Route path="/create" element={<CreateElection />} />
+          <Route path="/editpoll/:id" element={<EditElection />} />
           <Route path="/results" element={<Results />} />
           <Route path="/result/:id" element={<Result />} />
           <Route path="*" element={<NotFound />} />

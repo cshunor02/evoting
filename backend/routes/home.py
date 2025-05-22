@@ -12,71 +12,192 @@ def home():
 # Helper function
 def candidate_to_dict(candidate):
     return {
-        'id': candidate.id,
-        'name': candidate.name,
+        'id': candidate.candidateId,
+        'name': candidate.candidateName,
     }
 
+@blueprint.route('/allpoll', methods=['GET'])
+def get_all_polls():
+    polls = Election.query.all()
+    polls_list = []
+    for poll in polls:
+        candidates = Candidate.query.filter_by(electionId=poll.electionId).all()
+        candidates_list = [candidate_to_dict(c) for c in candidates]
+        polls_list.append({
+            "id": poll.electionId,
+            "title": poll.electionTitle,
+            "start_date": poll.startDate,
+            "end_date": poll.endDate,
+            "poll_type": poll.pollType,
+            "anonymity": poll.isAnonymous,
+            "candidates": candidates_list
+        })
 
-# GET all candidates
-@blueprint.route('/candidates', methods=['GET'])
-def candidates():
-    all_candidates = Candidate.query.all()
-    return jsonify([candidate_to_dict(c) for c in all_candidates])
+    return jsonify(polls_list), 200
 
+# Election.jsx, EditElection.jsx
+@blueprint.route('/getpoll/<string:id>', methods=['GET'])
+def get_poll(id):
+    poll = Election.query.get(id)
+    if not poll:
+        return jsonify({"error": "Poll not found"}), 404
 
-# GET specific candidate
-@blueprint.route('/candidates/<int:id>', methods=['GET'])
-def get_candidate(id):
-    candidate = Candidate.query.get(id)
-    if not candidate:
-        return jsonify({"error": "Candidate not found"}), 404
+    candidates = Candidate.query.filter_by(electionId=id).all()
+    candidates_list = [candidate_to_dict(c) for c in candidates]
+
     return jsonify({
-        "id": candidate.id,
-        "name": candidate.name
-    })
+        "id": poll.electionId,
+        "title": poll.electionTitle,
+        "start_date": poll.startDate,
+        "end_date": poll.endDate,
+        "poll_type": poll.pollType,
+        "anonymity": poll.isAnonymous,
+        "candidates": candidates_list
+    }), 200
 
 
-# CREATE new candidate
-@blueprint.route('/candidates', methods=['POST'])
-def create_candidate():
+# CreateElection.jsx, EditElection.jsx
+@blueprint.route('/polls/', methods=['POST'])
+def create_poll():
     data = request.get_json()
-    if not data or 'name' not in data:
-        return jsonify({'error': 'Missing name'}), 400
-
-    new_candidate = Candidate(name=data['name'])
-    db.session.add(new_candidate)
+    if not data or 'title' not in data:
+        return jsonify({'error': 'Missing title'}), 400
+    
+    if 'start_date' not in data or 'end_date' not in data or 'poll_type' not in data or 'anonymity' not in data:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    new_poll = Election()
+    new_poll.electionTitle = data['title']
+    new_poll.startDate = data['start_date']
+    new_poll.endDate = data['end_date']
+    new_poll.pollType = data['poll_type']
+    new_poll.isAnonymous = data['anonymity']
+    new_poll.status = "undefined"
+    
+    db.session.add(new_poll)
     db.session.commit()
-    return jsonify(candidate_to_dict(new_candidate)), 201
 
+    options = data['options']
 
-# UPDATE candidate
-@blueprint.route('/candidates/<int:id>', methods=['PUT'])
-def update_candidate(id):
-    candidate = Candidate.query.get_or_404(id)
+    for option in options:
+        candidate = Candidate()
+        candidate.candidateId = str(uuid.uuid4())
+        candidate.electionId = new_poll.electionId
+        candidate.candidateName = option
+        db.session.add(candidate)
+        db.session.commit()
+
+    return jsonify({
+        "id": new_poll.electionId,
+        "title": new_poll.electionTitle
+    }), 200
+
+@blueprint.route('/deletepoll/', methods=['POST'])
+def delete_poll():
     data = request.get_json()
+    if not data or 'id' not in data:
+        return jsonify({'error': 'Missing id'}), 400
 
-    if 'name' in data:
-        candidate.name = data['name']
+    poll = Election.query.get(data['id'])
+    if not poll:
+        return jsonify({'error': 'Poll not found'}), 404
 
-    db.session.commit()
-    return jsonify(candidate_to_dict(candidate))
-
-
-# DELETE candidate
-@blueprint.route('/candidates/<int:id>', methods=['DELETE'])
-def delete_candidate(id):
-    candidate = Candidate.query.get_or_404(id)
-    db.session.delete(candidate)
-    db.session.commit()
-    return jsonify({'message': 'Candidate deleted'}), 200
-
-
-@blueprint.route('/votes')
-def votes():
-    candidates = Candidate.query.all()
-    res = []
+    candidates = Candidate.query.filter_by(electionId=data['id']).all()
     for candidate in candidates:
-        votes = Vote.query.filter(Vote.candidate_id == candidate.id)
-        res.append({'name': candidate.name, 'votes': votes.count()})
+        votes = Vote.query.filter_by(candidateId=candidate.candidateId).all()
+        for vote in votes:
+            db.session.delete(vote)
+            db.session.commit() 
+        db.session.delete(candidate)
+        db.session.commit()
 
-    return jsonify(res)
+    db.session.delete(poll)
+    db.session.commit()
+
+    return jsonify({'message': 'Poll deleted successfully'}), 200
+
+@blueprint.route('/updatepoll/', methods=['POST'])
+def update_poll():
+    data = request.get_json()
+    if not data or 'id' not in data:
+        return jsonify({'error': 'Missing id'}), 400
+
+    poll = Election.query.get(data['id'])
+    if not poll:
+        return jsonify({'error': 'Poll not found'}), 404
+
+    candidates = Candidate.query.filter_by(electionId=data['id']).all()
+    for candidate in candidates:
+        votes = Vote.query.filter_by(candidateId=candidate.candidateId).all()
+        for vote in votes:
+            db.session.delete(vote)
+        db.session.delete(candidate)
+    
+    db.session.delete(poll)
+    db.session.commit()
+
+    new_poll = Election()
+    new_poll.electionTitle = data['title']
+    new_poll.startDate = data['start_date']
+    new_poll.endDate = data['end_date']
+    new_poll.pollType = data['poll_type']
+    new_poll.isAnonymous = data['anonymity']
+    new_poll.status = "undefined"
+    
+    db.session.add(new_poll)
+    db.session.commit()
+
+    options = data['options']
+
+    for option in options:
+        candidate = Candidate()
+        candidate.candidateId = str(uuid.uuid4())
+        candidate.electionId = new_poll.electionId
+        candidate.candidateName = option
+        db.session.add(candidate)
+        db.session.commit()
+
+    return jsonify({
+        "id": new_poll.electionId,
+        "title": new_poll.electionTitle
+    }), 200
+
+@blueprint.route('/vote/', methods=['POST'])
+def cast_vote():
+    data = request.get_json()
+    if not data or 'poll_id' not in data or 'candidate_id' not in data:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    poll = Election.query.get(data['poll_id'])
+    if not poll:
+        return jsonify({'error': 'Poll not found'}), 404
+
+    candidate = Candidate.query.filter_by(candidateId=data['candidate_id'], electionId=data['poll_id']).first()
+    if not candidate:
+        return jsonify({'error': 'Candidate not found'}), 404
+
+    new_vote = Vote()
+    new_vote.electionId = data['poll_id']
+    new_vote.candidateId = data['candidate_id']
+    db.session.add(new_vote)
+    db.session.commit()
+
+    return jsonify({'message': 'Vote cast successfully'}), 200
+
+@blueprint.route('/result/<string:id>', methods=['GET'])
+def get_results(id):
+    poll = Election.query.get(id)
+    if not poll:
+        return jsonify({'error': 'Poll not found'}), 404
+
+    candidates = Candidate.query.filter_by(electionId=id).all()
+    results = []
+    for candidate in candidates:
+        votes_count = Vote.query.filter_by(candidateId=candidate.candidateId, electionId=id).count()
+        results.append({
+            'candidate_id': candidate.candidateId,
+            'candidate_name': candidate.candidateName,
+            'votes_count': votes_count
+        })
+
+    return jsonify(results), 200

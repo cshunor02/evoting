@@ -2,39 +2,61 @@ import { useEffect, useState } from 'react';
 import './../App.css'
 import { useParams } from 'react-router-dom';
 import FadeIn from 'react-fade-in';
-import useCandidates from '../hooks/useCandidates';
 
 function Election() {
     const params = useParams();
     const id = params.id;
-    const [defaultMessage, changeMessage] = useState('HELO')
-    const { 
-        candidates, 
-        fetchCandidates,
-      } = useCandidates();
+    const [defaultMessage, changeMessage] = useState('This poll does not exist or has ended.')
+    const [data, setData] = useState({})
+    const [allData, setAllData] = useState({})
 
     useEffect(() => {
-        fetchCandidates();
+        fetch('http://127.0.0.1:8080/getpoll/' + id)
+        .then(response => response.json()) 
+        .then(data => {
+            if (data['error'] === 'Poll not found') {
+                return
+            } else {
+                changeMessage(() => data.title)
+                setData(() => data['candidates'])
+                setAllData(() => data)
+            }
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        })
+      }, [id])
 
-        if (id != undefined)
-        {
-            changeMessage(e => 'This is election ID: ' + id)
-        }
-      }, [id,  fetchCandidates]);
+    function castVote(e, id) {
+        e.preventDefault()
+        fetch('http://127.0.0.1:8080/vote/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                poll_id: allData.id,
+                candidate_id: id,
+            })
+        }).then((response) => {
+            console.log(response)
+            window.location.href = '/'
+        })
+        
+    }
 
     return (
         <div className="App">
             <FadeIn>
-                <h1>Election Page</h1>
-                <p>Welcome to the election page.</p>
-                <p>{defaultMessage}</p>
+                <h1>{defaultMessage}</h1>
  
-                <h2>Candidates</h2>
+                <h2>{Object.keys(data).length != 0 ? 'Candidates' : ''}</h2>
                 <ul>
-                    {candidates.map(candidate => (
-                    <li key={candidate.id}>
-                        {candidate.name}
-                    </li>
+                    {Object.keys(data).map(key => (
+                        <li key={key} className='candidate'>
+                            <h3>{data[key].name}</h3>
+                            <input type="button" className='voteButton' value={"Vote to " + data[key].name} onClick={(e) => {castVote(e, data[key].id)}} />
+                        </li>
                     ))}
                 </ul>
             </FadeIn>  
