@@ -64,16 +64,38 @@ def get_poll(id):
 @blueprint.route('/polls/', methods=['POST'])
 def create_poll():
     data = request.get_json()
-    if not data or 'title' not in data:
-        return jsonify({'error': 'Missing title'}), 400
+
+    required_fields = ['title', 'start_date', 'end_date', 'poll_type', 'anonymity', 'options']
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            return jsonify({'error': f'Missing or null field: {field}'}), 400
+
+    # Check string types
+    if not isinstance(data['title'], str):
+        return jsonify({'error': 'title must be a string'}), 400
     
-    if 'start_date' not in data or 'end_date' not in data or 'poll_type' not in data or 'anonymity' not in data:
-        return jsonify({'error': 'Missing required fields'}), 400
-    
+    if not isinstance(data['poll_type'], str):
+        return jsonify({'error': 'poll_type must be a string'}), 400
+
+    # Check boolean
+    if not isinstance(data['anonymity'], bool):
+        return jsonify({'error': 'anonymity must be true or false'}), 400
+
+    # Check options is a list of strings
+    if not isinstance(data['options'], list) or not all(isinstance(opt, str) for opt in data['options']):
+        return jsonify({'error': 'options must be a list of strings'}), 400
+
+    # Validate date format
+    try:
+        start_date = datetime.fromisoformat(data['start_date'])
+        end_date = datetime.fromisoformat(data['end_date'])
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Expected ISO format: YYYY-MM-DDTHH:MM:SS.sssZ'}), 400
+
     new_poll = Election()
     new_poll.electionTitle = data['title']
-    new_poll.startDate = datetime.strptime(data['start_date'], "%Y-%m-%dT%H:%M:%S.%fZ")
-    new_poll.endDate = datetime.strptime(data['end_date'], "%Y-%m-%dT%H:%M:%S.%fZ")
+    new_poll.startDate = start_date
+    new_poll.endDate = end_date
     new_poll.pollType = data['poll_type']
     new_poll.isAnonymous = data['anonymity']
     new_poll.status = "undefined"
@@ -142,13 +164,19 @@ def update_poll():
             db.session.delete(vote)
         db.session.delete(candidate)
 
+    try:
+        start_date = datetime.fromisoformat(data['start_date'])
+        end_date = datetime.fromisoformat(data['end_date'])
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Expected ISO format: YYYY-MM-DDTHH:MM:SS.sssZ'}), 400
+
     db.session.delete(poll)
     db.session.commit()
 
     new_poll = Election()
     new_poll.electionTitle = data['title']
-    new_poll.startDate = data['start_date']
-    new_poll.endDate = data['end_date']
+    new_poll.startDate = start_date
+    new_poll.endDate = end_date
     new_poll.pollType = data['poll_type']
     new_poll.isAnonymous = data['anonymity']
     new_poll.status = "undefined"

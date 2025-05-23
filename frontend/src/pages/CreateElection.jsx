@@ -47,8 +47,8 @@ function CreateElection() {
             body: JSON.stringify({
                 title: title,
                 description: description,
-                start_date: new Date(start_date).toISOString(),
-                end_date: new Date(end_date).toISOString(),
+                start_date: start_date,
+                end_date: end_date,
                 poll_type: pollType,
                 anonymity: anonymity,
                 options: choices.split('\n')
