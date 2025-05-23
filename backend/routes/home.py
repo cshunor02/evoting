@@ -2,7 +2,7 @@ import json
 from flask import Blueprint, jsonify
 from models import *
 from flask import request
-
+from datetime import datetime
 blueprint = Blueprint('home', __name__)
 
 @blueprint.route('/')
@@ -72,8 +72,8 @@ def create_poll():
     
     new_poll = Election()
     new_poll.electionTitle = data['title']
-    new_poll.startDate = data['start_date']
-    new_poll.endDate = data['end_date']
+    new_poll.startDate = datetime.strptime(data['start_date'], "%Y-%m-%dT%H:%M:%S.%fZ")
+    new_poll.endDate = datetime.strptime(data['end_date'], "%Y-%m-%dT%H:%M:%S.%fZ")
     new_poll.pollType = data['poll_type']
     new_poll.isAnonymous = data['anonymity']
     new_poll.status = "undefined"
