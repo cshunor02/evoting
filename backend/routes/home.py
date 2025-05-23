@@ -165,24 +165,37 @@ def update_poll():
 @blueprint.route('/vote/', methods=['POST'])
 def cast_vote():
     data = request.get_json()
-    if not data or 'poll_id' not in data or 'candidate_id' not in data:
-        return jsonify({'error': 'Missing required fields'}), 400
+    if not data or 'poll_id' not in data:
+        return jsonify({'error': 'Missing poll_id'}), 400
 
     poll = Election.query.get(data['poll_id'])
     if not poll:
         return jsonify({'error': 'Poll not found'}), 404
 
-    candidate = Candidate.query.filter_by(candidateId=data['candidate_id'], electionId=data['poll_id']).first()
-    if not candidate:
-        return jsonify({'error': 'Candidate not found'}), 404
+    # Support both single and multiple candidate IDs
+    if 'candidate_ids' in data:
+        candidate_ids = data['candidate_ids']
+    elif 'candidate_id' in data:
+        candidate_ids = [data['candidate_id']]
+    else:
+        return jsonify({'error': 'Missing candidate_id(s)'}), 400
 
-    new_vote = Vote()
-    new_vote.electionId = data['poll_id']
-    new_vote.candidateId = data['candidate_id']
-    db.session.add(new_vote)
+    # Iterate through all provided candidate IDs
+    for candidate_id in candidate_ids:
+        candidate = Candidate.query.filter_by(candidateId=candidate_id, electionId=data['poll_id']).first()
+        if not candidate:
+            return jsonify({'error': f'Candidate {candidate_id} not found'}), 404
+
+        new_vote = Vote(
+            electionId=data['poll_id'],
+            candidateId=candidate_id
+        )
+        db.session.add(new_vote)
+
     db.session.commit()
+    return jsonify({'message': 'Vote(s) cast successfully'}), 200
 
-    return jsonify({'message': 'Vote cast successfully'}), 200
+
 
 @blueprint.route('/result/<string:id>', methods=['GET'])
 def get_results(id):
