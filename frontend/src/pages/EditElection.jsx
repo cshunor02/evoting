@@ -97,9 +97,21 @@ function EditElection() {
                 options: choices.split('\n')
             })
         }).then((response) => {
-            console.log(response)
-            window.location.href = '/'
-        })
+            if (response.status === 403) {
+                alert('This poll can no longer be edited because votes have already been cast.');
+                window.location.href = '/';
+                return;
+            }
+            if (!response.ok) {
+                alert('Failed to update poll.');
+                return;
+            }
+            return response.json();
+        }).then(() => {
+            window.location.href = '/';
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
     }
 
     return (

@@ -163,9 +163,12 @@
 
 .deleteButton {
   background-color: #ef4444;
-  right: 50px;
+  right: 0px;
 }
 
+.editButton {
+  right: 50px;
+}
 
 .editButton svg, .deleteButton svg {
   color: white;

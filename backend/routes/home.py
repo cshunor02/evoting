@@ -23,6 +23,9 @@ def get_all_polls():
     for poll in polls:
         candidates = Candidate.query.filter_by(electionId=poll.electionId).all()
         candidates_list = [candidate_to_dict(c) for c in candidates]
+
+        has_votes = Vote.query.join(Candidate).filter(Candidate.electionId == poll.electionId).count() > 0
+
         polls_list.append({
             "id": poll.electionId,
             "title": poll.electionTitle,
@@ -30,7 +33,8 @@ def get_all_polls():
             "end_date": poll.endDate,
             "poll_type": poll.pollType,
             "anonymity": poll.isAnonymous,
-            "candidates": candidates_list
+            "candidates": candidates_list,
+            "has_votes": has_votes
         })
 
     return jsonify(polls_list), 200
@@ -128,11 +132,16 @@ def update_poll():
 
     candidates = Candidate.query.filter_by(electionId=data['id']).all()
     for candidate in candidates:
+        vote_exists = Vote.query.filter_by(candidateId=candidate.candidateId).first()
+        if vote_exists:
+            return jsonify({'error': 'Cannot edit poll after votes have been cast'}), 403
+
+    for candidate in candidates:
         votes = Vote.query.filter_by(candidateId=candidate.candidateId).all()
         for vote in votes:
             db.session.delete(vote)
         db.session.delete(candidate)
-    
+
     db.session.delete(poll)
     db.session.commit()
 
