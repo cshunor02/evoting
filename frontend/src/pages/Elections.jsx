@@ -51,7 +51,11 @@ function Elections() {
                         <h3>{data[key].title}</h3>
                         <p className={(new Date(data[key].end_date) - new Date()) >= 0 ? 'status active' : 'status passive'}><RxDotFilled className='dot' />{(new Date(data[key].end_date) - new Date()) >= 0 ? 'Active' : 'Inactive'}</p>
                         <Link to={{ pathname: `/election/${data[key].id}` }} className={(new Date(data[key].end_date) - new Date()) >= 0 ? 'voteButton activeButton' : 'voteButton passiveButton'}>{(new Date(data[key].end_date) - new Date()) >= 0 ? 'Vote now' : 'Not available'}</Link>
-                        <Link to={{ pathname: `/editpoll/${data[key].id}` }} className='activeButton editButton'><FaEdit /></Link>
+                        {!data[key].has_votes && (
+                            <Link to={{ pathname: `/editpoll/${data[key].id}` }} className='activeButton editButton'>
+                                <FaEdit />
+                            </Link>
+                        )}
                         <Link to={{}} onClick={(e) => deletePoll(e, data[key].id)} className='activeButton deleteButton'><MdDeleteForever /></Link>
                     </div>
                 ))}

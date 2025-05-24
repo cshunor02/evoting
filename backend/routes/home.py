@@ -2,7 +2,7 @@ import json
 from flask import Blueprint, jsonify
 from models import *
 from flask import request
-
+from datetime import datetime
 blueprint = Blueprint('home', __name__)
 
 @blueprint.route('/')
@@ -23,6 +23,9 @@ def get_all_polls():
     for poll in polls:
         candidates = Candidate.query.filter_by(electionId=poll.electionId).all()
         candidates_list = [candidate_to_dict(c) for c in candidates]
+
+        has_votes = Vote.query.join(Candidate).filter(Candidate.electionId == poll.electionId).count() > 0
+
         polls_list.append({
             "id": poll.electionId,
             "title": poll.electionTitle,
@@ -30,7 +33,8 @@ def get_all_polls():
             "end_date": poll.endDate,
             "poll_type": poll.pollType,
             "anonymity": poll.isAnonymous,
-            "candidates": candidates_list
+            "candidates": candidates_list,
+            "has_votes": has_votes
         })
 
     return jsonify(polls_list), 200
@@ -60,16 +64,38 @@ def get_poll(id):
 @blueprint.route('/polls/', methods=['POST'])
 def create_poll():
     data = request.get_json()
-    if not data or 'title' not in data:
-        return jsonify({'error': 'Missing title'}), 400
+
+    required_fields = ['title', 'start_date', 'end_date', 'poll_type', 'anonymity', 'options']
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            return jsonify({'error': f'Missing or null field: {field}'}), 400
+
+    # Check string types
+    if not isinstance(data['title'], str):
+        return jsonify({'error': 'title must be a string'}), 400
     
-    if 'start_date' not in data or 'end_date' not in data or 'poll_type' not in data or 'anonymity' not in data:
-        return jsonify({'error': 'Missing required fields'}), 400
-    
+    if not isinstance(data['poll_type'], str):
+        return jsonify({'error': 'poll_type must be a string'}), 400
+
+    # Check boolean
+    if not isinstance(data['anonymity'], bool):
+        return jsonify({'error': 'anonymity must be true or false'}), 400
+
+    # Check options is a list of strings
+    if not isinstance(data['options'], list) or not all(isinstance(opt, str) for opt in data['options']):
+        return jsonify({'error': 'options must be a list of strings'}), 400
+
+    # Validate date format
+    try:
+        start_date = datetime.fromisoformat(data['start_date'])
+        end_date = datetime.fromisoformat(data['end_date'])
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Expected ISO format: YYYY-MM-DDTHH:MM:SS.sssZ'}), 400
+
     new_poll = Election()
     new_poll.electionTitle = data['title']
-    new_poll.startDate = data['start_date']
-    new_poll.endDate = data['end_date']
+    new_poll.startDate = start_date
+    new_poll.endDate = end_date
     new_poll.pollType = data['poll_type']
     new_poll.isAnonymous = data['anonymity']
     new_poll.status = "undefined"
@@ -128,18 +154,29 @@ def update_poll():
 
     candidates = Candidate.query.filter_by(electionId=data['id']).all()
     for candidate in candidates:
+        vote_exists = Vote.query.filter_by(candidateId=candidate.candidateId).first()
+        if vote_exists:
+            return jsonify({'error': 'Cannot edit poll after votes have been cast'}), 403
+
+    for candidate in candidates:
         votes = Vote.query.filter_by(candidateId=candidate.candidateId).all()
         for vote in votes:
             db.session.delete(vote)
         db.session.delete(candidate)
-    
+
+    try:
+        start_date = datetime.fromisoformat(data['start_date'])
+        end_date = datetime.fromisoformat(data['end_date'])
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Expected ISO format: YYYY-MM-DDTHH:MM:SS.sssZ'}), 400
+
     db.session.delete(poll)
     db.session.commit()
 
     new_poll = Election()
     new_poll.electionTitle = data['title']
-    new_poll.startDate = data['start_date']
-    new_poll.endDate = data['end_date']
+    new_poll.startDate = start_date
+    new_poll.endDate = end_date
     new_poll.pollType = data['poll_type']
     new_poll.isAnonymous = data['anonymity']
     new_poll.status = "undefined"
@@ -165,24 +202,37 @@ def update_poll():
 @blueprint.route('/vote/', methods=['POST'])
 def cast_vote():
     data = request.get_json()
-    if not data or 'poll_id' not in data or 'candidate_id' not in data:
-        return jsonify({'error': 'Missing required fields'}), 400
+    if not data or 'poll_id' not in data:
+        return jsonify({'error': 'Missing poll_id'}), 400
 
     poll = Election.query.get(data['poll_id'])
     if not poll:
         return jsonify({'error': 'Poll not found'}), 404
 
-    candidate = Candidate.query.filter_by(candidateId=data['candidate_id'], electionId=data['poll_id']).first()
-    if not candidate:
-        return jsonify({'error': 'Candidate not found'}), 404
+    # Support both single and multiple candidate IDs
+    if 'candidate_ids' in data:
+        candidate_ids = data['candidate_ids']
+    elif 'candidate_id' in data:
+        candidate_ids = [data['candidate_id']]
+    else:
+        return jsonify({'error': 'Missing candidate_id(s)'}), 400
 
-    new_vote = Vote()
-    new_vote.electionId = data['poll_id']
-    new_vote.candidateId = data['candidate_id']
-    db.session.add(new_vote)
+    # Iterate through all provided candidate IDs
+    for candidate_id in candidate_ids:
+        candidate = Candidate.query.filter_by(candidateId=candidate_id, electionId=data['poll_id']).first()
+        if not candidate:
+            return jsonify({'error': f'Candidate {candidate_id} not found'}), 404
+
+        new_vote = Vote(
+            electionId=data['poll_id'],
+            candidateId=candidate_id
+        )
+        db.session.add(new_vote)
+
     db.session.commit()
+    return jsonify({'message': 'Vote(s) cast successfully'}), 200
 
-    return jsonify({'message': 'Vote cast successfully'}), 200
+
 
 @blueprint.route('/result/<string:id>', methods=['GET'])
 def get_results(id):
