@@ -8,7 +8,7 @@ const AdminDashboard = () => {
         <FadeIn>
             <h1>Admin Dashboard</h1>
             <div className='activeElection adminPanel'>
-                <Link to="/create" className='voteButton activeButton adminBoard'>Add New Poll</Link>
+                <Link to="/create" className='activeButton adminBoard'>Add New Poll</Link>
             </div>
         </FadeIn>
     );
